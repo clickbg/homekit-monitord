@@ -42,4 +42,5 @@ if [[ "$RESTART_HUB" -ne 1 ]]; then
  sed -i '/then exec/d' $MONITRC
 fi
 
+chmod 600 $MONITRC
 /etc/init.d/monit restart

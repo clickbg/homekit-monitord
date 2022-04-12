@@ -34,7 +34,7 @@ else
  sed -i "s/SERVER/$EMAIL_SERVER/g" $MONITRC
  sed -i "s/PORT/$EMAIL_PORT/g" $MONITRC
  sed -i "s/EUSER/$EMAIL_SENDER/g" $MONITRC
- sed -i "s/EPASSWORD/$EMAIL_PASSWORD/g" $MONITRC
+ sed -i "s/MAILPASS/$EMAIL_PASSWORD/g" $MONITRC
 fi
 
 ## Set Monit to restart HomeKit hubs, or not depending on our config

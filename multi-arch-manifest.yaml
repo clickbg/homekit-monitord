@@ -4,11 +4,11 @@ manifests:
     platform:
       architecture: amd64
       os: linux
-  - image: clickbg/homekit-monitord:arm32v6
+  - image: clickbg/homekit-monitord:arm32v5
     platform:
       architecture: arm
       os: linux
-      variant: v6
+      variant: v5
   - image: clickbg/homekit-monitord:arm32v7
     platform:
       architecture: arm

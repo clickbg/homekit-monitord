@@ -56,5 +56,6 @@ fi
 
 rm -f $MONIT_LOG
 ln -s /dev/stderr $MONIT_LOG
-chmod 600 $MONITRC
+chmod 600 $MONITRC $TELEGRAMRC
+chmod 700 /usr/local/bin/*.sh
 /etc/init.d/monit restart

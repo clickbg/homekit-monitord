@@ -4,7 +4,7 @@
  set daemon  600           # check services at 10-minute intervals
      with start delay 600  # optional: delay the first check by 10-minutes
 
- set logfile syslog facility log_daemon
+ set logfile /var/log/monit.log
 
  set idfile /run/.monit.id
 

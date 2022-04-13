@@ -2,6 +2,7 @@
 MONIT_PASSWORD=$(openssl rand -hex 20)
 MONITRC="/etc/monit/monitrc"
 NGINXRC="/etc/nginx/conf.d/default.conf"
+MONIT_LOG="/var/log/monit.log"
 HK_LOGFILE="/var/log/nginx/homekit-health-reports.json"
 
 # Setup our env
@@ -42,5 +43,7 @@ if [[ "$RESTART_HUB" -ne 1 ]]; then
  sed -i '/then exec/d' $MONITRC
 fi
 
+rm -f $MONIT_LOG
+ln -s /dev/stderr $MONIT_LOG
 chmod 600 $MONITRC
 /etc/init.d/monit restart

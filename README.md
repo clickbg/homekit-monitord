@@ -117,3 +117,57 @@ You can do that with either [Controller for HomeKit](https://apps.apple.com/us/a
    **Eve**
    
    ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/eve.png?raw=true)
+
+
+**IKEA Tradfri Smart Outlet setup**  
+--
+IKEA Tradfri smart outlet is ideal for us since it can be controlled outside of HomeKit and doesn't require internet.  
+If you want me to add support for other smart outlet please get in touch.  
+
+***Getting access token***   
+In the container there is a helper script which you can use to register and discover devices on your IKEA Tradfri Hub:  
+1. Enter the container  
+    `docker exec -it homekit-monitord /bin/bash`  
+ 2. Run the interactive script, be prepared to enter the IKEA Hub IP and Registration Code (Found on the bottom of the Hub)  
+     `root@588e501a6cf1:/# /usr/local/bin/setup_tradfri.sh setup`  
+     `Hub Security Code (Bottom of the device): CODE_FROM_THE_BOTTOM_OF_THE_HUB`  
+     `Choose access username: CHOOSE_COOL_USER_NAME`  
+     `Hub IP Address: ikea_hub_ip`  
+
+     Output:  
+     `Username: test2`  
+     `Token: TOKEN`  
+     `1.17.0033`  
+
+2. Discover the smart outlet/s ID:  
+    `root@588e501a6cf1:/# /usr/local/bin/setup_tradfri.sh discover`  
+`Hub IP Address: ikea_hub_ip`  
+`Hub Username: ikea_hub_user`  
+`Hub Token: ikea_hub_token`  
+
+      Output:  
+
+     `  {`  
+  `"9001": "Office HomePod Outlet",`  
+`  "9003": 65609,`  
+`  "9002": 1649486154,`  
+`  "9020": 1649832083,`  
+`  "9054": 0,`  
+`  "9019": 1,`  
+`  "3": {`
+`    "0": "IKEA of Sweden",`  
+`    "1": "TRADFRI control outlet",`  
+`    "2": "",`  
+`    "3": "2.3.089",`  
+`    "6": 1,`  
+ `   "7": 4353,`  
+`    "8": 0`  
+`  },`  
+
+The ID is stored in property 9003, in our case the ID is **65609**.   
+Now we can setup our container to restart this HomePod by entering the following properties in compose:  
+`RESTART_HUB=1`  
+`HOMEKIT_HUBS="10.10.10.20:65609`  
+`IKEA_USER=ikea_hub_user`  
+`IKEA_HUB_ADDR=ikea_hub_ip`  
+`IKEA_TOKEN=ikea_hub_token`   

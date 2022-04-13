@@ -84,4 +84,36 @@ Telegram notifications (you can use both e-mail and Telegram, read below for det
 `-e TELEGRAM_TOKEN=secret` - Telegram token  
 `-e TELEGRAM_CHATID=chatid` - Telegram chatid  
 
+**Installation**
+--
+**Configuring advanced automation in HomeKit**
 
+ 1. Open the [Home](https://apps.apple.com/us/app/home/id1110145103) app
+ 2. Click on `+` sign
+ 3. Select `Add New Automation`
+ 4. Select `A Time Of Day Occurs` 
+ 5. Set any date (we will change that later)
+ 6. Select `People Off` and click `Next`
+ 7. Scroll to the bottom of the page and click `Convert To Shortcut`
+ 8. Click `Add action` and select `URL`
+ 9. Click on the `URL` action and input your Docker container IP followed by `/active-hub-report-health/`
+     Example: `http://10.10.200.200:8080/active-hub-report-health/`
+  10. Click `Add action` and select `Get Contents Of URL`
+  11. Make sure the `Get Contents Of URL` action uses the `URL` variable
+      Result:
+      ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/shortcut-example.png?raw=true)
+12. Click `Next` and set a `Name` for the automation
+
+Next we need to schedule this automation to run every 5 minutes.
+Unfortunately that is not possible in the Home app, so we are going to use a 3rd party app.
+You can do that with either [Controller for HomeKit](https://apps.apple.com/us/app/controller-for-homekit/id1198176727) (the free version supports that), [Home+](https://apps.apple.com/us/app/home-5/id995994352) (paid), [Eve for HomeKit](https://apps.apple.com/us/app/eve-for-homekit/id917695792) (also free)
+
+1. Open your app of choice and find the automation that we just defined in Home - `Automations` in Controller, `Automation > Timers` in Eve
+2. Click on it and set `Repeat` to `5 minutes`
+
+   **Controller**  
+   ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/controller.png?raw=true)
+   
+   **Eve**
+   
+   ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/eve.png?raw=true)

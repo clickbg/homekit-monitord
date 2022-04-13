@@ -6,6 +6,7 @@
 # Tools that we need
 COAP_CLIENT=$(which coap-client-gnutls)
 JQ=$(which jq)
+MYNAME=$(basename $0)
 
 #################################### End config
 
@@ -72,6 +73,7 @@ restart_last_active_hub()
 
 #################################### Begin execution
 
+[[ "$(pgrep $MYNAME)" != $$ ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Another instance of script $MYNAME is already running. Exiting ..." 
 [[ ! -f $LOGFILE ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Log file $LOGFILE not found." 
 [[ -z $COAP_CLIENT ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) libcoap2 not found."
 [[ -z $JQ ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) jq not found."

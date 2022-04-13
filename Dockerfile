@@ -1,4 +1,6 @@
-FROM nginx:latest
+ARG ARCH=
+FROM ${ARCH}nginx:latest
+MAINTAINER daniel@rsync.eu
 
 RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split
 RUN ln -s /usr/bin/dpkg-deb /usr/sbin/dpkg-deb

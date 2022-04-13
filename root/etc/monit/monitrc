@@ -11,6 +11,7 @@
  set statefile /run/.monit.state
 
  set mailserver SERVER port PORT username "EUSER" password "MAILPASS" using tls
+ set mail-format { from: EUSER }
  set alert EMAIL
 
  set eventqueue

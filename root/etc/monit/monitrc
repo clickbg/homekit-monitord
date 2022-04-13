@@ -33,4 +33,6 @@
 # Alert if HC misses to report status for 20min (4 health checks) and restart after 30min (6 health checks)  
 check program homekit-active-hub-state with path "/usr/local/bin/check_active_homekit_hub_health.sh 10min"
   if status != 0 for 2 cycles then alert
+  if status != 0 for 2 cycles then exec "/usr/local/bin/monit2telegram.sh"
+   else if succeeded then exec "/usr/local/bin/monit2telegram.sh"
   if status != 0 for 3 cycles then exec "/usr/local/bin/restart_active_homekit_hub.sh"

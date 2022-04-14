@@ -33,6 +33,7 @@ sed -i "s/PASSWORD/$MONIT_PASSWORD/g" $MONITRC
 if [[ -z $NOTIFY_EMAIL || -z $EMAIL_SENDER || -z $EMAIL_SERVER || -z $EMAIL_PORT ]]; then
  sed -i '/set mailserver/d' $MONITRC
  sed -i '/set alert/d' $MONITRC
+ sed -i '/set mail-format/d' $MONITRC
 else
  sed -i "s/EMAIL/$NOTIFY_EMAIL/g" $MONITRC
  sed -i "s/SERVER/$EMAIL_SERVER/g" $MONITRC
@@ -59,3 +60,4 @@ ln -s /dev/stderr $MONIT_LOG
 chmod 600 $MONITRC $TELEGRAMRC
 chmod 700 /usr/local/bin/*.sh
 /etc/init.d/monit restart
+

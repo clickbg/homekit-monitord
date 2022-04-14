@@ -1,5 +1,8 @@
 # HomeKit Active Hub Monitoring
 
+
+<img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" width="20" height="20"> [Avaliable on DockerHub](https://hub.docker.com/r/clickbg/homekit-monitord)
+
 This project aims to provide monitoring and optionally restart of your HomeKit Hubs - Apple TV, HomePod (mini, OG).  
 Monitoring is done by configuring an advanced automation in HomeKit which will report the state to the Docker container.
 In case the currently active Hub crashes/hangs or otherwise stops running this automation the container will notify you about the issue and optionally (if you have your Hubs plugged into smart outlets) restart the last known active HomeKit hub.

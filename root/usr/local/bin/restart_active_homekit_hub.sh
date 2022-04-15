@@ -27,9 +27,15 @@ log()
    echo -e "$@" | tee $LOG_OUT
 }
 
+check_tradfri_hub_connection()
+{
+ $COAP_CLIENT -B 30 -m get -u "$IKEA_USER" -k "$IKEA_TOKEN" "coaps://$IKEA_HUB_ADDR:5684/15001" | grep -q '^.*$'
+ return $?
+}
+
 get_last_active_hub()
 {
- jq -re '.remote_addr' $LOGFILE | tail -1
+ $JQ -re '.remote_addr' $LOGFILE | tail -1
 }
 
 restart_last_active_hub()
@@ -38,13 +44,13 @@ restart_last_active_hub()
  local IKEA_ID_ACTIVE_HUB=$2
  local EXIT=0
  # Stop the power via our smart outlet
-  OUT=$($COAP_CLIENT -m put -u "$IKEA_USER" -k "$IKEA_TOKEN" -e '{ "3312": [{ "5850": 0 }] }' "coaps://$IKEA_HUB_ADDR:5684/15001/$IKEA_ID_ACTIVE_HUB" 2>&1 >/dev/null)
+  OUT=$($COAP_CLIENT -B 30 -m put -u "$IKEA_USER" -k "$IKEA_TOKEN" -e '{ "3312": [{ "5850": 0 }] }' "coaps://$IKEA_HUB_ADDR:5684/15001/$IKEA_ID_ACTIVE_HUB" 2>&1)
   [[ $? -ne 0 ]] && let "EXIT++"
   [[ ! -z $OUT ]] && let "EXIT++"
   # Wait 120s to be sure all components are properly restarted
   sleep 120
   # Start the power to the smart outlet
-  OUT=$($COAP_CLIENT -m put -u "$IKEA_USER" -k "$IKEA_TOKEN" -e '{ "3312": [{ "5850": 1 }] }' "coaps://$IKEA_HUB_ADDR:5684/15001/$IKEA_ID_ACTIVE_HUB" 2>&1 >/dev/null)
+  OUT=$($COAP_CLIENT -B 30 -m put -u "$IKEA_USER" -k "$IKEA_TOKEN" -e '{ "3312": [{ "5850": 1 }] }' "coaps://$IKEA_HUB_ADDR:5684/15001/$IKEA_ID_ACTIVE_HUB" 2>&1)
   [[ $? -ne 0 ]] && let "EXIT++"
   [[ ! -z $OUT ]] && let "EXIT++"
   # Check if the restart was successful. If it failed, terminate the execution and produce error.
@@ -77,9 +83,15 @@ restart_last_active_hub()
 
 #################################### Begin execution
 
+# Check our tools are present
 [[ ! -f $LOGFILE ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Log file $LOGFILE not found." 
 [[ -z $COAP_CLIENT ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) libcoap2 not found."
 [[ -z $JQ ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) jq not found."
+
+# Verify the IKEA hub is active
+check_tradfri_hub_connection
+[[ $? -ne 0 ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) [FAILED] Failed to connect to IKEA Tradfri Hub at [$IKEA_HUB_ADDR]" 
+
 # Match the hubs to their smart plug IDs
 ACTIVE_HUB=$(get_last_active_hub)
 [[ -z $ACTIVE_HUB ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) [FAILED] Failed to retrive the currently active HomeKit hub from log file: $LOGFILE"

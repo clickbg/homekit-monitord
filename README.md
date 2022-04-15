@@ -63,8 +63,6 @@ Command Line:
 --
 ***Required parameters***  
  `-p 8080:80` - On which port should the container listen for Hub connections  
- `-e RESTART_HUB` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs - requires IKEA smart plugs  
- `-e HOMEKIT_HUBS` - List of the HomeKit Hubs in the format IP:IKEA_TRADFRI_ID. If you are not using smart outlets configure the hubs in the format IP:0 and set the `RESTART_HUB` property to 0.  
 
 ***Optional parameters***  
           `-e PUID=1000` - uid for the nginx process, leave at 1000 if unsure  
@@ -72,6 +70,8 @@ Command Line:
           `-e TZ=Bulgaria/Sofia` - [Timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)  
 
 IKEA Smart Outlets configuration (read below for detailed instructions):  
+`-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs  
+`-e HOMEKIT_HUBS=10.10.10.20:65609 10.10.10.30:65610` - List of the HomeKit Hubs in the format IP:IKEA_TRADFRI_ID  
 `-e IKEA_USER=ikea_hub_user` - IKEA hub user  
 `-e IKEA_HUB_ADDR=ikea_hub_ip` - IKEA hub IP  
 `-e IKEA_TOKEN=ikea_hub_token` - IKEA hub token  
@@ -170,7 +170,7 @@ In the container there is a helper script which you can use to register and disc
 The ID is stored in property 9003, in our case the ID is **65609**.   
 Now we can setup our container to restart this HomePod by entering the following properties in compose:  
 `RESTART_HUB=1`  
-`HOMEKIT_HUBS="10.10.10.20:65609`  
+`HOMEKIT_HUBS=10.10.10.20:65609 10.10.10.30:65610`  
 `IKEA_USER=ikea_hub_user`  
 `IKEA_HUB_ADDR=ikea_hub_ip`  
 `IKEA_TOKEN=ikea_hub_token`   

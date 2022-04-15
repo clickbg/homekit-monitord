@@ -6,6 +6,7 @@
 # Tools that we need
 COAP_CLIENT=$(which coap-client-gnutls)
 JQ=$(which jq)
+LOG_OUT="/proc/1/fd/1"
 
 #################################### End config
 
@@ -17,14 +18,18 @@ source /etc/environment
 # Error exit function
 die()
 {
-   echo -e "$@" >&2
+   echo -e "$@" | tee $LOG_OUT
    exit 1
+}
+
+log()
+{
+   echo -e "$@" | tee $LOG_OUT
 }
 
 get_last_active_hub()
 {
  jq -re '.remote_addr' $LOGFILE | tail -1
- [[ $? -ne 0 ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Failed to retrive the currently active HomeKit hub from log file: $LOGFILE"
 }
 
 restart_last_active_hub()
@@ -45,7 +50,7 @@ restart_last_active_hub()
   # Check if the restart was successful. If it failed, terminate the execution and produce error.
    if [[ $EXIT -eq 0 ]]
     then
-     echo "$(date +%Y-%m-%d\ %H:%M:%S) Active HomeKit Hub $CUR_ACTIVE_HUB : RESTARTED"
+     log "$(date +%Y-%m-%d\ %H:%M:%S) [SUCCESS] Active HomeKit Hub $CUR_ACTIVE_HUB : RESTARTED"
      # Wait for new active hub to be elected. We are waiting 10*60s (10mins) since our HC are every 5mins.
      COUNT=0
       while [ "$COUNT" -le 10 ]
@@ -58,12 +63,12 @@ restart_last_active_hub()
           let "COUNT++"
           continue
          else
-          echo "$(date +%Y-%m-%d\ %H:%M:%S) New Active HomeKit Hub Elected: $NEW_ACTIVE_HUB"
+          log "$(date +%Y-%m-%d\ %H:%M:%S) [SUCCESS] New Active HomeKit Hub Elected: $NEW_ACTIVE_HUB"
           return 0
          fi
         done
     else
-     echo "$(date +%Y-%m-%d\ %H:%M:%S) Active HomeKit Hub $CUR_ACTIVE_HUB : RESTART FAILED"
+     log "$(date +%Y-%m-%d\ %H:%M:%S) [FAILED] Active HomeKit Hub $CUR_ACTIVE_HUB : RESTART FAILED"
      return 1
     fi
 }
@@ -77,6 +82,7 @@ restart_last_active_hub()
 [[ -z $JQ ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) jq not found."
 # Match the hubs to their smart plug IDs
 ACTIVE_HUB=$(get_last_active_hub)
+[[ -z $ACTIVE_HUB ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) [FAILED] Failed to retrive the currently active HomeKit hub from log file: $LOGFILE"
 echo $HOMEKIT_HUBS | grep -q "$ACTIVE_HUB" || die "$(date +%Y-%m-%d\ %H:%M:%S) Hub: $ACTIVE_HUB not defined in the script. Known hubs: $HOMEKIT_HUBS"
 for HUB in $HOMEKIT_HUBS
  do

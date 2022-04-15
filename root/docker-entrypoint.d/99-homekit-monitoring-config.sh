@@ -67,4 +67,3 @@ ln -s /proc/1/fd/1 $MONIT_LOG
 chmod 600 $MONITRC $TELEGRAMRC
 chmod 700 /usr/local/bin/*.sh
 /etc/init.d/monit restart
-

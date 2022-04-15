@@ -84,13 +84,13 @@ restart_last_active_hub()
 #################################### Begin execution
 
 # Check our tools are present
-[[ ! -f $LOGFILE ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Log file $LOGFILE not found." 
+[[ ! -f $LOGFILE ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Log file $LOGFILE not found."
 [[ -z $COAP_CLIENT ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) libcoap2 not found."
 [[ -z $JQ ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) jq not found."
 
 # Verify the IKEA hub is active
 check_tradfri_hub_connection
-[[ $? -ne 0 ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) [FAILED] Failed to connect to IKEA Tradfri Hub at [$IKEA_HUB_ADDR]" 
+[[ $? -ne 0 ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) [FAILED] Failed to connect to IKEA Tradfri Hub at [$IKEA_HUB_ADDR]"
 
 # Match the hubs to their smart plug IDs
 ACTIVE_HUB=$(get_last_active_hub)

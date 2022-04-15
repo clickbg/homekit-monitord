@@ -46,17 +46,18 @@ fi
 if [[ -z $TELEGRAM_TOKEN || -z $TELEGRAM_CHATID ]]; then
  sed -i '/monit2telegram.sh/d' $MONITRC
 else
+ sed -i '/cycles then alert/d' $MONITRC
  sed -i "s/TELEGRAM_TOKEN/$TELEGRAM_TOKEN/g" $TELEGRAMRC
  sed -i "s/TELEGRAM_CHATID/$TELEGRAM_CHATID/g" $TELEGRAMRC
 fi
 
 ## Set Monit to restart HomeKit hubs, or not depending on our config
-if [[ "$RESTART_HUB" -ne 1 ]]; then
+if [[ "$RESTART_HUB" -ne 1 || -z $IKEA_USER || -z $IKEA_HUB_ADDR || -z $IKEA_TOKEN || -z $HOMEKIT_HUBS ]]; then
  sed -i '/restart_active_homekit_hub.sh/d' $MONITRC
 fi
 
 rm -f $MONIT_LOG
-ln -s /dev/stderr $MONIT_LOG
+ln -s /proc/1/fd/1 $MONIT_LOG
 chmod 600 $MONITRC $TELEGRAMRC
 chmod 700 /usr/local/bin/*.sh
 /etc/init.d/monit restart

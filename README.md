@@ -169,10 +169,10 @@ In the container there is a helper script which you can use to register and disc
 
 The ID is stored in property 9003, in our case the ID is **65609**.   
 Now we can setup our container to restart this HomePod by entering the following properties in compose:  
-`RESTART_HUB=1`  
-`HOMEKIT_HUBS=10.10.10.20:65609 10.10.10.30:65610`  
-`IKEA_USER=ikea_hub_user`  
-`IKEA_HUB_ADDR=ikea_hub_ip`  
-`IKEA_TOKEN=ikea_hub_token`   
+`- RESTART_HUB=1`  
+`- HOMEKIT_HUBS=10.10.10.20:65609 10.10.10.30:65610`  
+`- IKEA_USER=ikea_hub_user`  
+`- IKEA_HUB_ADDR=ikea_hub_ip`  
+`- IKEA_TOKEN=ikea_hub_token`   
 
 

@@ -1,0 +1,103 @@
+name: "[prod] Publish new image if the base image Nginx has an update"
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+jobs:
+
+  update-check:
+    runs-on: self-hosted
+    environment: 'dev'
+    outputs:
+      image-needs-updating: ${{ steps.check.outputs.needs-updating }}
+    steps:
+    - name: Docker Image Update Checker
+      id: check
+      uses: lucacome/docker-image-update-checker@v1
+      with:
+        base-image: library/nginx:latest
+        image: clickbg/homekit-monitord:latest
+
+  build-container:
+    needs: update-check
+    runs-on: self-hosted
+    environment: 'dev'
+    if: ${{ needs.update-check.outputs.image-needs-updating == 'true' }}
+    steps:
+    - name: "[build-container] Checkout code"
+      uses: actions/checkout@v2
+    - name: "[build-container] Build the container locally"
+      run: docker build -t homekit-monitord:${{ github.run_id }} .
+
+  run-container:
+    runs-on: self-hosted
+    environment: 'dev'
+    needs: build-container
+    outputs:
+      port: ${{ steps.gen_port.outputs.port }}
+    steps:
+    - name: "[run-container] Generate port number"
+      id: gen_port
+      run: echo "::set-output name=port::$(( ((RANDOM<<15)|RANDOM) % 49152 + 10000 ))"
+    - name: "[run-container] Run the container locally"
+      run: docker run --name homekit-monitord-${{ github.run_id }} -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p ${{ steps.gen_port.outputs.port }}:80 homekit-monitord:${{ github.run_id }}
+
+  wait-container-start:
+    runs-on: self-hosted
+    environment: 'dev'
+    needs: run-container
+    steps:
+    - name: "[wait-container-start] Wait for the container to fully start"
+      run: sleep 30s
+      shell: bash
+
+  test-nginx:
+    runs-on: self-hosted
+    environment: 'dev'
+    needs: [run-container,wait-container-start]
+    steps:
+    - name: "[test-nginx] Test if the container can receive healthchecks"
+      run: curl --fail http://localhost:${{ needs.run-container.outputs.port }}/active-hub-report-health/
+
+  test-monit:
+    runs-on: self-hosted
+    environment: 'dev'
+    needs: [run-container,wait-container-start]
+    steps:
+    - name: "[test-monit] Test if monit has started"
+      run: docker exec homekit-monitord-${{ github.run_id }} pgrep monit
+
+  cleanup:
+    runs-on: self-hosted
+    environment: 'dev'
+    needs: [test-monit, test-nginx, build-container, run-container]
+    if: always()
+    steps:
+    - name: "[cleanup] Delete old images"
+      run: docker rm -f homekit-monitord-${{ github.run_id }} && docker rmi -f homekit-monitord:${{ github.run_id }} ; exit 0
+
+
+  publish:
+    runs-on: self-hosted
+    environment: 'prod'
+    needs: [test-nginx, test-monit]
+    steps:
+    - name: "[publish] Checkout code"
+      uses: actions/checkout@v2
+    - name: "[publish] Delete old images"
+      run: docker rmi -f homekit-monitord nginx; exit 0
+    - name: "[publish] Login to docker hub"
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: "[publish] Install buildx"
+      id: buildx
+      uses: crazy-max/ghaction-docker-buildx@v1
+      with:
+        buildx-version: latest
+    - name: "[publish] Build and push the image"
+      run: |
+        docker buildx build --push \
+          --tag clickbg/homekit-monitord:latest \
+          --platform linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/amd64 .
+      

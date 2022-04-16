@@ -14,17 +14,26 @@ jobs:
     steps:
     - name: "[build-container] Checkout code"
       uses: actions/checkout@v2
-    - name: "[build-container] Generate build id"
-      run: echo $RANDOM > BUILD_ID
     - name: "[build-container] Build the container locally"
-      run: docker build -t homekit-monitord:$(cat BUILD_ID) .
-    - name: "[build-container] Run the container locally"
-      run: docker run --name homekit-monitord -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p 8080:80 homekit-monitord:$(cat BUILD_ID)
+      run: docker build -t homekit-monitord:${{ github.run_id }} .
+
+  run-container:
+    runs-on: self-hosted
+    environment: 'dev'
+    needs: build-container
+    outputs:
+      port: ${{ steps.gen_port.outputs.port }}
+    steps:
+    - name: "[run-container] Generate port number"
+    - id: gen_port
+      run: echo "::set-output name=port::$(( ((RANDOM<<15)|RANDOM) % 49152 + 10000 ))"
+    - name: "[run-container] Run the container locally"
+      run: docker run --name homekit-monitord-${{ github.run_id }} -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p ${{ steps.gen_port.outputs.port }}:80 homekit-monitord:${{ github.run_id }}
 
   wait-container-start:
     runs-on: self-hosted
     environment: 'dev'
-    needs: build-container
+    needs: run-container
     steps:
     - name: "[wait-container-start] Wait for the container to fully start"
       run: sleep 30s
@@ -36,7 +45,7 @@ jobs:
     needs: wait-container-start
     steps:
     - name: "[test-nginx] Test if the container can receive healthchecks"
-      run: curl --fail http://localhost:8080/active-hub-report-health/
+      run: curl --fail http://localhost:${{needs.run-container.outputs.port}}/active-hub-report-health/
 
   test-monit:
     runs-on: self-hosted
@@ -44,7 +53,7 @@ jobs:
     needs: wait-container-start
     steps:
     - name: "[test-monit] Test if monit has started"
-      run: docker exec homekit-monitord pgrep monit
+      run: docker exec homekit-monitord-${{ github.run_id }} pgrep monit
       
   cleanup:
     runs-on: self-hosted
@@ -53,5 +62,5 @@ jobs:
     if: always()
     steps:
     - name: "[cleanup] Delete old images"
-      run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:$(cat BUILD_ID) ; exit 0
+      run: docker rm -f homekit-monitord-${{ github.run_id }} && docker rmi -f homekit-monitord:${{ github.run_id }} ; exit 0
 

@@ -16,7 +16,7 @@ jobs:
     - name: Docker Image Update Checker
       uses: lucacome/docker-image-update-checker@v1.1.0
       with:
-        base-image: nginx:latest
+        base-image: library/nginx:latest
         image: clickbg/homekit-monitord:latest
       if: ${{ github.event_name == 'schedule' }}
 

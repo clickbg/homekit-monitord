@@ -15,15 +15,25 @@ jobs:
       run: docker build -t homekit-monitord:testing .
     - name: "[test] Run the container locally"
       run: docker run --name homekit-monitord -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p 8080:80 homekit-monitord:testing
+    - name: "[test] Wait for 30 seconds"
+      run: sleep 30s
+      shell: bash
     - name: "[test] Test if the container can receive healthchecks"
       run: curl --fail http://localhost:8080/active-hub-report-health/
-    - name: "[test] Cleanup the images"
-      run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing
+
+      
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: "[cleanup] Cleanup the images"
+        run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing
 
 
   publish:
     runs-on: self-hosted
-    environment: 'Production'
+    environment: 'latest'
     needs: test
     steps:
     - name: "[publish] Checkout code"

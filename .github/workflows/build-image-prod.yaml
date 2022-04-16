@@ -47,7 +47,7 @@ jobs:
   cleanup:
     runs-on: self-hosted
     environment: 'dev'
-    needs: [test-*, build-container]
+    needs: [test-nginx, test-monit, build-container]
     if: always()
     steps:
     - name: "[cleanup] Delete old images"
@@ -56,7 +56,7 @@ jobs:
   publish:
     runs-on: self-hosted
     environment: 'prod'
-    needs: [test-*]
+    needs: [test-nginx, test-monit]
     steps:
     - name: "[publish] Checkout code"
       uses: actions/checkout@v2

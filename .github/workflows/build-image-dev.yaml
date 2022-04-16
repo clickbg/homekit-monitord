@@ -49,7 +49,7 @@ jobs:
   cleanup:
     runs-on: self-hosted
     environment: 'dev'
-    needs: [test-*, build-container]
+    needs: [test-monit, test-nginx, build-container]
     if: always()
     steps:
     - name: "[cleanup] Delete old images"

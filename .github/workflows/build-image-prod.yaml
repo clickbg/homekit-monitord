@@ -40,7 +40,7 @@ jobs:
   test-nginx:
     runs-on: self-hosted
     environment: 'dev'
-    needs: wait-container-start
+    needs: [run-container,wait-container-start]
     steps:
     - name: "[test-nginx] Test if the container can receive healthchecks"
       run: curl --fail http://localhost:${{ needs.run-container.outputs.port }}/active-hub-report-health/
@@ -48,7 +48,7 @@ jobs:
   test-monit:
     runs-on: self-hosted
     environment: 'dev'
-    needs: wait-container-start
+    needs: [run-container,wait-container-start]
     steps:
     - name: "[test-monit] Test if monit has started"
       run: docker exec homekit-monitord-${{ github.run_id }} pgrep monit

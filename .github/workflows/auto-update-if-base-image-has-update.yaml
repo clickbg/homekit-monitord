@@ -1,4 +1,4 @@
-name: "[prod] Publish new image if the base image Nginx has an update"
+name: "[schedule] Publish new image if the base image - Nginx has an update"
 
 on:
   schedule:

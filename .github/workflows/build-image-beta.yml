@@ -1,4 +1,4 @@
-name: "[beta] Test the image on commit to any branch"
+name: "[dev] Test the image on commit to any non-release branch"
 
 on:
   push:

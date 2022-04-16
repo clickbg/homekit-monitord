@@ -10,6 +10,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted
+    environment: 'dev'
     steps:
     - name: "[deploy] Cleanup any old images"
       run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing ; exit 0
@@ -23,6 +24,7 @@ jobs:
 
   test:
     runs-on: self-hosted
+    environment: 'dev'
     needs: deploy
     steps:
     - name: "[test] Wait for the container to fully start"
@@ -33,6 +35,7 @@ jobs:
       
   cleanup:
     runs-on: self-hosted
+    environment: 'dev'
     needs: [test, deploy]
     if: always()
     steps:

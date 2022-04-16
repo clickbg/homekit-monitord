@@ -1,14 +1,30 @@
-name: "[prod] Test and publish the image on commit to main"
+name: "[prod] Test and publish new image if the base image Nginx has an update"
 
 on:
-  push:
-    branches: main
+  schedule:
+    - cron: "* * */5 * *"
+  workflow_dispatch:
 
 jobs:
+
+  update-check:
+    runs-on: self-hosted
+    environment: 'dev'
+    outputs:
+      image-needs-updating: ${{ steps.check.outputs.needs-updating }}
+    steps:
+    - name: Docker Image Update Checker
+      uses: lucacome/docker-image-update-checker@v1.1.0
+      with:
+        base-image: nginx:latest
+        image: clickbg/homekit-monitord:latest
+      if: ${{ github.event_name == 'schedule' }}
 
   build-container:
     runs-on: self-hosted
     environment: 'dev'
+    needs: update-check
+    if: ${{ github.event_name != 'schedule' || needs.check.outputs.image-needs-updating == 'true' }}
     steps:
     - name: "[build-container] Cleanup any old images"
       run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing ; exit 0

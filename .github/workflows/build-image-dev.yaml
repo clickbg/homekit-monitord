@@ -45,7 +45,7 @@ jobs:
     needs: wait-container-start
     steps:
     - name: "[test-nginx] Test if the container can receive healthchecks"
-      run: curl --fail http://localhost:${{needs.run-container.outputs.port}}/active-hub-report-health/
+      run: curl --fail http://localhost:${{ needs.run-container.outputs.port }}/active-hub-report-health/
 
   test-monit:
     runs-on: self-hosted
@@ -58,7 +58,7 @@ jobs:
   cleanup:
     runs-on: self-hosted
     environment: 'dev'
-    needs: [test-monit, test-nginx, build-container]
+    needs: [test-monit, test-nginx, build-container, run-container]
     if: always()
     steps:
     - name: "[cleanup] Delete old images"

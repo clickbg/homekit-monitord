@@ -6,31 +6,38 @@ on:
 
 jobs:
 
-  test:
+  deploy:
     runs-on: self-hosted
     steps:
+    - name: "[test] Cleanup any old images"
+      run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing ; exit 0
     - name: "[test] Checkout code"
       uses: actions/checkout@v2
     - name: "[test] Build the container locally"
       run: docker build -t homekit-monitord:testing .
     - name: "[test] Run the container locally"
       run: docker run --name homekit-monitord -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p 8080:80 homekit-monitord:testing
-    - name: "[test] Wait for 30 seconds"
+
+
+  test:
+    runs-on: self-hosted
+    needs: deploy
+    steps:
+    - name: "[test] Wait for the container to fully start"
       run: sleep 30s
       shell: bash
     - name: "[test] Test if the container can receive healthchecks"
       run: curl --fail http://localhost:8080/active-hub-report-health/
-
       
   cleanup:
-    runs-on: ubuntu-latest
-    needs: test
+    runs-on: self-hosted
+    needs: [test, deploy]
     if: always()
     steps:
-      - name: "[cleanup] Cleanup the images"
-        run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing
+    - name: "[cleanup] Delete old images"
+      run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing ; exit 0
 
-
+    
   publish:
     runs-on: self-hosted
     environment: 'latest'

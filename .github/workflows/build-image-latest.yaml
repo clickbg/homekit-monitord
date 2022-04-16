@@ -1,41 +1,41 @@
-name: [latest] Test and publish image on commit to main
+name: "[latest] Test and publish image on commit to main"
 
 on:
   push:
     branches: main
-    
+
 jobs:
 
   test:
     runs-on: self-hosted
     steps:
-    - name: [test] Checkout code
+    - name: "[test] Checkout code"
       uses: actions/checkout@v2
-    - name: [test] Build the container locally
+    - name: "[test] Build the container locally"
       run: docker build -t homekit-monitord:testing .
-    - name: [test] Run the container locally
+    - name: "[test] Run the container locally"
       run: docker run --name homekit-monitord -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p 8080:80 homekit-monitord:testing
-    - name: [test] Test if the container can receive healthchecks
+    - name: "[test] Test if the container can receive healthchecks"
       run: curl --fail http://localhost:8080/active-hub-report-health/
-    - name: [test] Cleanup the images
+    - name: "[test] Cleanup the images"
       run: docker rm -f homekit-monitord && docker rmi -f homekit-monitord:testing
-        
+
 
   publish:
     runs-on: self-hosted
     environment: 'Production'
     needs: test
     steps:
-    - name: [publish] Checkout code
+    - name: "[publish] Checkout code"
       uses: actions/checkout@v2
-    - name: [publish] Install buildx
+    - name: "[publish] Install buildx"
       id: buildx
       uses: crazy-max/ghaction-docker-buildx@v1
       with:
         buildx-version: latest
-    - name: [publish] Login to docker hub
+    - name: "[publish] Login to docker hub"
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: [publish] Build and push the image
+    - name: "[publish] Build and push the image"
       run: |
         docker buildx build --push \
           --tag clickbg/homekit-monitord:latest \

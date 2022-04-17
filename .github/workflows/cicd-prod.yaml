@@ -11,23 +11,23 @@ jobs:
     environment: 'dev'
     steps:
     - name: "Checkout code"
-      uses: actions/checkout@v2
+      use: actions/checkout@v2
 
   build:
     runs-on: self-hosted
     environment: 'dev'
     needs: setup
     steps:
-      - id: build
       - uses: clickbg/build-container@v1
+        id: build
 
   run:
     runs-on: self-hosted
     environment: 'dev'
     needs: build
     steps:
-      - id: run-all-opts
       - uses: clickbg/run-container-all-opts@v1
+        id: run-all-opts
         with:
           build-id: ${{ steps.build.outputs.build-id }}
 

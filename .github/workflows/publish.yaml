@@ -22,7 +22,7 @@ jobs:
 
   publish:
     runs-on: self-hosted
-    environment: ${{ inputs.environment }}
+    environment: prod
     steps:
     - name: "Checkout code"
       uses: actions/checkout@v2

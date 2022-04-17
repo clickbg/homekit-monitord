@@ -18,7 +18,7 @@ jobs:
     environment: 'dev'
     needs: setup
     steps:
-      - uses: clickbg/build-container@v1
+      - uses: clickbg/tests/build-container@v1
         id: build
 
   run:
@@ -26,7 +26,7 @@ jobs:
     environment: 'dev'
     needs: build
     steps:
-      - uses: clickbg/run-container-all-opts@v1
+      - uses: clickbg/tests/run-container-all-opts@v1
         id: run-all-opts
         with:
           build-id: ${{ steps.build.outputs.build-id }}
@@ -36,20 +36,20 @@ jobs:
     environment: 'dev'
     needs: [build, run]
     steps:
-      - uses: clickbg/test-monit@v1
+      - uses: clickbg/tests/test-monit@v1
         with:
           build-id: ${{ steps.build.outputs.build-id }}
-      - uses: clickbg/test-nginx@v1
+      - uses: clickbg/tests/test-nginx@v1
         with:
           port: ${{ steps.run-all-opts.outputs.port }}
 
   cleanup:
     runs-on: self-hosted
     environment: 'dev'
-    needs: [build, run]
+    needs: [build, run, test]
     if: always()
     steps:
-      - uses: clickbg/cleanup@v1
+      - uses: clickbg/tests/cleanup@v1
         with: 
           build-id: ${{ steps.build.outputs.build-id }}
 

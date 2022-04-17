@@ -29,6 +29,7 @@ jobs:
     needs: build
     outputs:
       run-all-opts-port: ${{ steps.run-all-opts.outputs.port }}
+      run-all-opts-name: ${{ steps.run-all-opts.outputs.name }}
     steps:
       - uses: ./.github/actions/run-container-all-opts
         id: run-all-opts
@@ -41,10 +42,10 @@ jobs:
     environment: 'dev'
     needs: [build, run]
     steps:
-      - uses: ./.github/actions/tests/test-monit
+      - uses: ./.github/actions/tests/monit
         with:
-          build-id: ${{ needs.build.outputs.build-id }}
-      - uses: ./.github/actions/tests/test-nginx
+          name: ${{ needs.run.outputs.run-all-opts-name }}
+      - uses: ./.github/actions/tests/nginx
         with:
           port: ${{ needs.run.outputs.run-all-opts-port }}
 
@@ -57,4 +58,4 @@ jobs:
       - uses: ./.github/actions/cleanup
         with: 
           build-id: ${{ needs.build.outputs.build-id }}
-
+          name: ${{ needs.run.outputs.run-all-opts-name }}

@@ -1,0 +1,11 @@
+inputs:
+  port:
+    description: 'Container port'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Test if the container can receive healthchecks"
+      run: curl --fail http://localhost:${{ inputs.port }}/active-hub-report-health/
+      shell: bash

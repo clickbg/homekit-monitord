@@ -1,0 +1,11 @@
+inputs:
+  build-id:
+    description: 'Build id'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Test if monit has started"
+      run: docker exec homekit-monitord-${{ inputs.build-id }} pgrep monit
+      shell: bash

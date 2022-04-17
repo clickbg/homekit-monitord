@@ -17,6 +17,8 @@ jobs:
     runs-on: self-hosted
     environment: 'dev'
     needs: setup
+    outputs:
+      build-id: ${{ steps.build.outputs.build-id }}
     steps:
       - uses: ./.github/actions/build-container
         id: build
@@ -25,6 +27,8 @@ jobs:
     runs-on: self-hosted
     environment: 'dev'
     needs: build
+    outputs:
+      run-all-opts-port: ${{ steps.run-all-opts.outputs.port }}
     steps:
       - uses: ./.github/actions/run-container-all-opts
         id: run-all-opts
@@ -42,7 +46,7 @@ jobs:
           build-id: ${{ needs.build.outputs.build-id }}
       - uses: ./.github/actions/tests/test-nginx
         with:
-          port: ${{ needs.run-all-opts.outputs.port }}
+          port: ${{ needs.run.outputs.run-all-opts-port }}
 
   cleanup:
     runs-on: self-hosted

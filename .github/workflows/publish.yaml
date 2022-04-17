@@ -2,6 +2,15 @@ name: "PUBLISH"
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
   workflow_run:
     workflows: ["CICD"]
     types:
@@ -13,7 +22,7 @@ jobs:
 
   publish:
     runs-on: self-hosted
-    environment: 'prod'
+    environment: ${{ inputs.environment }}
     steps:
     - name: "Checkout code"
       uses: actions/checkout@v2

@@ -28,3 +28,8 @@ jobs:
   publish:
     needs: cicd
     uses: clickbg/homekit-monitord/.github/workflows/publish.yaml@main
+    with:
+      environment: prod
+    secrets:
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

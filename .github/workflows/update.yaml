@@ -24,8 +24,4 @@ jobs:
     needs: update-check
     runs-on: self-hosted
     environment: 'dev'
-    steps:
-      - uses: actions/checkout@v2
-        name: "Checkout code"
-      - uses: clickbg/homekit-monitord/.github/workflows/cicd.yaml@main
-        name: "Start the CICD pipeline if update is needed"
+    uses: clickbg/homekit-monitord/.github/workflows/cicd.yaml@main

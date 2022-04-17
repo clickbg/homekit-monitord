@@ -1,6 +1,7 @@
 name: "PUBLISH"
 on:
   workflow_dispatch:
+  workflow_call:
   workflow_run:
     workflows: ["CICD"]
     types:

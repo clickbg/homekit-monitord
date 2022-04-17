@@ -23,3 +23,7 @@ jobs:
   cicd:
     needs: update-check
     uses: clickbg/homekit-monitord/.github/workflows/cicd.yaml@main
+
+  publish:
+    needs: cicd
+    uses: clickbg/homekit-monitord/.github/workflows/publish.yaml@main

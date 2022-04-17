@@ -12,7 +12,6 @@ jobs:
   publish:
     runs-on: self-hosted
     environment: 'prod'
-    needs: [test-nginx, test-monit]
     steps:
     - name: "Checkout code"
       uses: actions/checkout@v2

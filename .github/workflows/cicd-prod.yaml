@@ -29,7 +29,7 @@ jobs:
       - uses: ./.github/actions/run-container-all-opts
         id: run-all-opts
         with:
-          build-id: ${{ steps.build.outputs.build-id }}
+          build-id: ${{ needs.build.outputs.build-id }}
       - uses: ./.github/actions/wait
 
   test:
@@ -39,10 +39,10 @@ jobs:
     steps:
       - uses: ./.github/actions/tests/test-monit
         with:
-          build-id: ${{ steps.build.outputs.build-id }}
+          build-id: ${{ needs.build.outputs.build-id }}
       - uses: ./.github/actions/tests/test-nginx
         with:
-          port: ${{ steps.run-all-opts.outputs.port }}
+          port: ${{ needs.run-all-opts.outputs.port }}
 
   cleanup:
     runs-on: self-hosted
@@ -52,5 +52,5 @@ jobs:
     steps:
       - uses: ./.github/actions/cleanup
         with: 
-          build-id: ${{ steps.build.outputs.build-id }}
+          build-id: ${{ needs.build.outputs.build-id }}
 

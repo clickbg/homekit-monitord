@@ -24,7 +24,6 @@ jobs:
     needs: update-check
     runs-on: self-hosted
     environment: 'dev'
-    if: ${{ needs.update-check.outputs.image-needs-updating == 'true' }}
     steps:
       - uses: actions/checkout@v2
         name: "Checkout code"

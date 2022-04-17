@@ -22,7 +22,6 @@ jobs:
 
   cicd:
     needs: update-check
-    if: ${{ needs.update-check.outputs.image-needs-updating == 'true' }}
     uses: clickbg/homekit-monitord/.github/workflows/cicd.yaml@main
 
   publish:

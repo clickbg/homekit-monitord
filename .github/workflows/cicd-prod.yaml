@@ -30,6 +30,7 @@ jobs:
         id: run-all-opts
         with:
           build-id: ${{ steps.build.outputs.build-id }}
+      - uses: ./.github/actions/wait
 
   test:
     runs-on: self-hosted

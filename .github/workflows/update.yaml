@@ -22,6 +22,4 @@ jobs:
 
   cicd:
     needs: update-check
-    runs-on: self-hosted
-    environment: 'dev'
     uses: clickbg/homekit-monitord/.github/workflows/cicd.yaml@main

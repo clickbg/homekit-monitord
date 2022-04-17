@@ -1,12 +1,12 @@
 name: "PUBLISH"
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["CICD"]
     types:
       - completed
     branches:
         - 'main'
-    workflow_dispatch:
 
 jobs:
 

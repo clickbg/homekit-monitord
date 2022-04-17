@@ -19,5 +19,5 @@ runs:
       run: echo "::set-output name=port::$(( ((RANDOM<<15)|RANDOM) % 49152 + 10000 ))"
       shell: bash
     - name: "Run the container locally"
-      run: docker run --name homekit-monitord-${{ inputs.build-id }} -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p ${{ steps.gen_port.outputs.port }}:80 homekit-monitord:${{ steps.gen_port.outputs.port }}
+      run: docker run --name homekit-monitord-${{ steps.gen_port.outputs.port }} -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.example.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p ${{ steps.gen_port.outputs.port }}:80 homekit-monitord:${{ inputs.build-id }}
       shell: bash

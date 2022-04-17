@@ -1,8 +1,9 @@
-name: "Production"
+name: "CICD"
 
 on:
   push:
-    branches: main
+    branches:
+      - '**'
       
 jobs:
 
@@ -21,6 +22,7 @@ jobs:
       build-id: ${{ steps.build.outputs.build-id }}
     steps:
       - uses: ./.github/actions/build-container
+        name: "Build container image"
         id: build
 
   run:
@@ -30,12 +32,21 @@ jobs:
     outputs:
       run-all-opts-port: ${{ steps.run-all-opts.outputs.port }}
       run-all-opts-name: ${{ steps.run-all-opts.outputs.name }}
+      run-no-opts-port: ${{ steps.run-no-opts.outputs.port }}
+      run-no-opts-name: ${{ steps.run-no-opts.outputs.name }}
     steps:
       - uses: ./.github/actions/run-container-all-opts
+        name: "Start container with all options set"
         id: run-all-opts
         with:
           build-id: ${{ needs.build.outputs.build-id }}
+      - uses: ./.github/actions/run-container-no-opts
+        name: "Start container with no options set"
+        id: run-no-opts
+        with:
+          build-id: ${{ needs.build.outputs.build-id }}
       - uses: ./.github/actions/wait
+        name: "Wait for the containers to start"
 
   test:
     runs-on: self-hosted
@@ -43,11 +54,21 @@ jobs:
     needs: [build, run]
     steps:
       - uses: ./.github/actions/tests/monit
+        name: "Test Monit with all options on"
         with:
           name: ${{ needs.run.outputs.run-all-opts-name }}
+      - uses: ./.github/actions/tests/monit
+        name: "Test Monit with no options on"
+        with:
+          name: ${{ needs.run.outputs.run-no-opts-name }}
       - uses: ./.github/actions/tests/nginx
+        name: "Test Nginx with all options on"
         with:
           port: ${{ needs.run.outputs.run-all-opts-port }}
+      - uses: ./.github/actions/tests/nginx
+        name: "Test Nginx with no options on"
+        with:
+          port: ${{ needs.run.outputs.run-no-opts-port }}
 
   cleanup:
     runs-on: self-hosted
@@ -57,5 +78,5 @@ jobs:
     steps:
       - uses: ./.github/actions/cleanup
         with: 
-          build-id: ${{ needs.build.outputs.build-id }}
-          name: ${{ needs.run.outputs.run-all-opts-name }}
+          images: homekit-monitord:${{ needs.build.outputs.build-id }}
+          containers: homekit-monitord-${{ needs.run.outputs.run-all-opts-name }} homekit-monitord-${{ needs.run.outputs.run-no-opts-name }}

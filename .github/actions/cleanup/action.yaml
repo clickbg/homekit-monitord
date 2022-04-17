@@ -1,14 +1,14 @@
 inputs:
-  build-id:
-    description: 'Build id'
+  images:
+    description: 'List of images to delete'
     required: true
-  name:
-    description: 'Container Name'
+  containers:
+    description: 'List of containers to delete'
     required: true
 
 runs:
   using: "composite"
   steps:
     - name: "Delete test images"
-      run: docker rm -f homekit-monitord-${{ inputs.name }} && docker rmi -f homekit-monitord:${{ inputs.build-id }} ; exit 0
+      run: docker rm -f ${{ inputs.containers }} && docker rmi -f ${{ inputs.containers }} 
       shell: bash

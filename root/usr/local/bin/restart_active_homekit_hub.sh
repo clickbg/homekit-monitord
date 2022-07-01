@@ -99,9 +99,10 @@ echo $HOMEKIT_HUBS | grep -q "$ACTIVE_HUB" || die "$(date +%Y-%m-%d\ %H:%M:%S) H
 for HUB in $HOMEKIT_HUBS
  do
      HUB_IP="$(echo $HUB | cut -d ":" -f1)"
-     HUB_ID="$(echo $HUB | cut -d ":" -f2)"
-     if [[ "$ACTIVE_HUB" == "$HUB_IP" ]]
+     HUB_ID="$(echo $HUB | cut -d ":" -f2 -s)"
+     if [[ "$ACTIVE_HUB" == "$HUB_IP" ]] 
      then
+         [[ -z "$HUB_ID" ]] && die "$(date +%Y-%m-%d\ %H:%M:%S) Hub: $ACTIVE_HUB no IKEA Tradfri ID provided for this hub, failed to restart."
          restart_last_active_hub $HUB_IP $HUB_ID
          exit $?
      fi

@@ -14,3 +14,4 @@ RUN apt-get update \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
     
 COPY root /
+

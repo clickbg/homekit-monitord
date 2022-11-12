@@ -43,11 +43,7 @@ Command Line:
           - PUID=1000
           - PGID=1000
           - TZ=Bulgaria/Sofia
-          - RESTART_HUB=1
-          - IKEA_USER=ikea_hub_user
-          - IKEA_HUB_ADDR=ikea_hub_ip
-          - IKEA_TOKEN=ikea_hub_token
-          - HOMEKIT_HUBS=10.10.10.20:200 10.10.10.30:200 10.10.10.40:200
+          - RESTART_HUB=0
           - NOTIFY_EMAIL=me@example.com
           - EMAIL_SENDER=bot@example.com
           - EMAIL_PASSWORD=secret
@@ -72,6 +68,13 @@ Command Line:
           `-e PGID=1000` - guid for the nginx process, leave at 1000 if unsure  
           `-e TZ=Bulgaria/Sofia` - [Timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)  
 
+
+Zigbee2MQTT Smart Outlets (read below for detailed instructions):
+`-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs
+`-e HOMEKIT_HUBS=10.10.10.20:0xb4e3f9fffe22f3d2 10.10.10.30:0xb4e3f9fffe66f3d9` - List of the HomeKit Hubs in the format IP:IEEE_Address
+`-e MQTT_ADDR=mqtt://10.1.1.1/zigbee2mqtt` - Support for SSL and auth avaliable as well, format is: `mqtt(s)://[username[:password]@]host[:port]/topic`
+
+
 IKEA Smart Outlets configuration (read below for detailed instructions):  
 `-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs  
 `-e HOMEKIT_HUBS=10.10.10.20:65609 10.10.10.30:65610` - List of the HomeKit Hubs in the format IP:IKEA_TRADFRI_ID  
@@ -79,12 +82,14 @@ IKEA Smart Outlets configuration (read below for detailed instructions):
 `-e IKEA_HUB_ADDR=ikea_hub_ip` - IKEA hub IP  
 `-e IKEA_TOKEN=ikea_hub_token` - IKEA hub token  
 
+
 E-mail notifications (the container doesn't ship with e-mail server so please use your own or Gmail):  
 `-e NOTIFY_EMAIL=me@example.com` - The e-mail address of the person who will receive alerts  
 `-e EMAIL_SENDER=bot@example.com` - The username of the e-mail from which the alerts will be sent  
 `-e EMAIL_PASSWORD=secret` - The password of the e-mail from which the alerts will be sent  
 `-e EMAIL_SERVER=smtp.gmail.com` - The e-mail server from which the alerts will be sent  
 `-e EMAIL_PORT=587` - The e-mail server port - common options 25, 465, 487  
+
 
 Telegram notifications (you can use both e-mail and Telegram, read below for detailed instructions):  
 `-e TELEGRAM_TOKEN=secret` - Telegram token  
@@ -123,6 +128,22 @@ You can do that with either [Controller for HomeKit](https://apps.apple.com/us/a
    **Eve**
    
    ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/eve.png?raw=true)
+
+
+** Zigbee2MQTT Smart Outlet setup**  
+Zigbee2MQTT like IKEA Tradfri can be controlled outside of HomeKit and has open, well documented format.  
+
+***Getting access***  
+If you are using Eclipse Mosquitto check out your mosquitto.conf for user/password/port/encryption.  
+Apart from that the configuration format is: `mqtt(s)://[username[:password]@]host[:port]/topic`.  
+The default topic for Zigbee2MQTT is zigbee2mqtt:  
+Example:  
+   `MQTT_ADDR=mqtt://10.1.1.1/zigbee2mqtt`  
+
+*** Getting the Zigbee2MQTT ID of your outlets ***  
+1. Navigate to Zigbee2MQTT Web UI  
+2. Find the outlet and click on it  
+3. Copy the IEEE Address  
 
 
 **IKEA Tradfri Smart Outlet setup**  

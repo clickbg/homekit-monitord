@@ -13,6 +13,7 @@ cat << EOF > /etc/environment
 IKEA_USER="$IKEA_USER"
 IKEA_HUB_ADDR="$IKEA_HUB_ADDR"
 IKEA_TOKEN="$IKEA_TOKEN"
+MQTT_ADDR="$MQTT_ADDR"
 HOMEKIT_HUBS="$HOMEKIT_HUBS"
 NOTIFY_EMAIL="$NOTIFY_EMAIL"
 EMAIL_SENDER="$EMAIL_SENDER"
@@ -53,13 +54,22 @@ else
  sed -i "s/TELEGRAM_CHATID/$TELEGRAM_CHATID/g" $TELEGRAMRC
 fi
 
-## Set Monit to restart HomeKit hubs, or not depending on our config
+## (COAP) Set Monit to restart HomeKit hubs, or not depending on our config
 if [[ "$RESTART_HUB" -ne 1 || -z $IKEA_USER || -z $IKEA_HUB_ADDR || -z $IKEA_TOKEN || -z $HOMEKIT_HUBS ]]; then
  sed -i '/tradfri-token-renewal/d' $MONITRC
- sed -i '/restart_active_homekit_hub.sh/d' $MONIT_HKRC
+ sed -i '/restart_active_homekit_hub_coap.sh/d' $MONIT_HKRC
+ chmod 000 /usr/local/bin/renew_tradfri_token.sh /usr/local/bin/restart_active_homekit_hub_coap.sh
 else
- chmod 700 /usr/local/bin/renew_tradfri_token.sh
+ chmod 700 /usr/local/bin/renew_tradfri_token.sh /usr/local/bin/restart_active_homekit_hub_coap.sh
  /usr/local/bin/renew_tradfri_token.sh
+fi
+
+## (MQTT) Set Monit to restart HomeKit hubs, or not depending on our config
+if [[ "$RESTART_HUB" -ne 1 || -z $MQTT_ADDR || -z $HOMEKIT_HUBS ]]; then
+ sed -i '/restart_active_homekit_hub_mqtt.sh/d' $MONIT_HKRC
+ chmod 000 /usr/local/bin/restart_active_homekit_hub_mqtt.sh
+else
+ chmod 700 /usr/local/bin/restart_active_homekit_hub_mqtt.sh
 fi
 
 rm -f $MONIT_LOG

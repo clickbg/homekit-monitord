@@ -69,10 +69,10 @@ Command Line:
           `-e TZ=Bulgaria/Sofia` - [Timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)  
 
 
-Zigbee2MQTT Smart Outlets (read below for detailed instructions):
-`-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs
-`-e HOMEKIT_HUBS=10.10.10.20:0xb4e3f9fffe22f3d2 10.10.10.30:0xb4e3f9fffe66f3d9` - List of the HomeKit Hubs in the format IP:IEEE_Address
-`-e MQTT_ADDR=mqtt://10.1.1.1/zigbee2mqtt` - Support for SSL and auth avaliable as well, format is: `mqtt(s)://[username[:password]@]host[:port]/topic`
+Zigbee2MQTT Smart Outlets (read below for detailed instructions): 
+`-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs 
+`-e HOMEKIT_HUBS=10.10.10.20:0xb4e3f9fffe22f3d2 10.10.10.30:0xb4e3f9fffe66f3d9` - List of the HomeKit Hubs in the format IP:IEEE_Address 
+`-e MQTT_ADDR=mqtt://10.1.1.1/zigbee2mqtt` - Support for SSL and auth avaliable as well, format is: `mqtt(s)://[username[:password]@]host[:port]/topic` 
 
 
 IKEA Smart Outlets configuration (read below for detailed instructions):  
@@ -130,17 +130,17 @@ You can do that with either [Controller for HomeKit](https://apps.apple.com/us/a
    ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/eve.png?raw=true)
 
 
-** Zigbee2MQTT Smart Outlet setup**  
+**Zigbee2MQTT Smart Outlet setup** 
 Zigbee2MQTT like IKEA Tradfri can be controlled outside of HomeKit and has open, well documented format.  
 
 ***Getting access***  
-If you are using Eclipse Mosquitto check out your mosquitto.conf for user/password/port/encryption.  
+If you are using Eclipse Mosquitto check out your mosquitto.conf for user/password/port/encryption. 
 Apart from that the configuration format is: `mqtt(s)://[username[:password]@]host[:port]/topic`.  
 The default topic for Zigbee2MQTT is zigbee2mqtt:  
 Example:  
    `MQTT_ADDR=mqtt://10.1.1.1/zigbee2mqtt`  
 
-*** Getting the Zigbee2MQTT ID of your outlets ***  
+***Getting the Zigbee2MQTT ID of your outlets***  
 1. Navigate to Zigbee2MQTT Web UI  
 2. Find the outlet and click on it  
 3. Copy the IEEE Address  

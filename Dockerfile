@@ -7,7 +7,7 @@ RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split \
 
 RUN apt-get update \
     && apt-get install -y monit \
-    && apt-get install -y libcoap2-bin \
+    && apt-get install -y libcoap3-bin \
     && apt-get install -y jq \
     && apt-get install -y procps \
     && apt-get install -y mosquitto-clients \

@@ -52,6 +52,7 @@ else
  sed -i '/then alert/d' $MONIT_HKRC $MONIT_TRADFRIRC
  sed -i "s/TELEGRAM_TOKEN/$TELEGRAM_TOKEN/g" $TELEGRAMRC
  sed -i "s/TELEGRAM_CHATID/$TELEGRAM_CHATID/g" $TELEGRAMRC
+ /usr/local/bin/sendtelegram.sh -c /etc/telegramrc -m "Homekit-monitord - instance changed at $(date) : Service started."
 fi
 
 ## (COAP) Set Monit to restart HomeKit hubs, or not depending on our config

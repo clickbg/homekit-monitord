@@ -1,3 +1,4 @@
+
 # HomeKit Active Hub Monitoring
 
 [![CICD](https://github.com/clickbg/homekit-monitord/workflows/CICD/badge.svg?branch=main)](https://github.com/clickbg/homekit-monitord/actions/workflows/cicd.yaml)
@@ -16,11 +17,12 @@ In case the currently active Hub crashes/hangs or otherwise stops running this a
  
  **Supported smart outlets**
  - [IKEA Tradfri Wireless Outlet](https://www.ikea.com/us/en/p/tradfri-wireless-control-outlet-30356169/) + [IKEA Tradfri Hub](https://www.ikea.com/us/en/p/tradfri-gateway-white-00337813/)
+ - Any [Zigbee2MQTT](https://www.zigbee2mqtt.io/) compatible outlet
 
 **Requirements**
 
  - Docker host running on amd64, armv7 or arm64 - Raspberry Pi or any modern Intel/AMD powered computer or VM
- - (Optional) IKEA Tradfri Wireless Outlets + [IKEA Tradfri Hub](https://www.ikea.com/us/en/p/tradfri-gateway-white-00337813/)
+ - (Optional) IKEA Tradfri Wireless Outlets + [IKEA Tradfri Hub](https://www.ikea.com/us/en/p/tradfri-gateway-white-00337813/) or a [Zigbee2MQTT](https://www.zigbee2mqtt.io/) outlet
 
 **Usage**
 --
@@ -30,7 +32,6 @@ Command Line:
   
  Using [Docker Compose](https://docs.docker.com/compose/) (recommended):
 
-    version: '3.6'
     services:
     
       homekit-monitord:
@@ -68,30 +69,28 @@ Command Line:
           `-e PGID=1000` - guid for the nginx process, leave at 1000 if unsure  
           `-e TZ=Bulgaria/Sofia` - [Timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)  
 
-
-Zigbee2MQTT Smart Outlets (read below for detailed instructions):  
+**Zigbee2MQTT Smart Outlets** 
 `-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs  
 `-e HOMEKIT_HUBS=10.10.10.20:0xb4e3f9fffe22f3d2 10.10.10.30:0xb4e3f9fffe66f3d9` - List of the HomeKit Hubs in the format IP:IEEE_Address  
 `-e MQTT_ADDR=mqtt://10.1.1.1/zigbee2mqtt` - Support for SSL and auth avaliable as well, format is: `mqtt(s)://[username[:password]@]host[:port]/topic` 
 
-
-IKEA Smart Outlets configuration (read below for detailed instructions):  
+**IKEA Smart Outlets** 
 `-e RESTART_HUB=1` - Binary value 1/0, dictates whether or not the container will try to restart the Hubs  
 `-e HOMEKIT_HUBS=10.10.10.20:65609 10.10.10.30:65610` - List of the HomeKit Hubs in the format IP:IKEA_TRADFRI_ID  
 `-e IKEA_USER=ikea_hub_user` - IKEA hub user  
 `-e IKEA_HUB_ADDR=ikea_hub_ip` - IKEA hub IP  
 `-e IKEA_TOKEN=ikea_hub_token` - IKEA hub token  
 
-
-E-mail notifications (the container doesn't ship with e-mail server so please use your own or Gmail):  
+**E-mail Notifications** 
+The container doesn't ship with e-mail server so please use your own or Gmail:  
 `-e NOTIFY_EMAIL=me@example.com` - The e-mail address of the person who will receive alerts  
 `-e EMAIL_SENDER=bot@example.com` - The username of the e-mail from which the alerts will be sent  
 `-e EMAIL_PASSWORD=secret` - The password of the e-mail from which the alerts will be sent  
 `-e EMAIL_SERVER=smtp.gmail.com` - The e-mail server from which the alerts will be sent  
 `-e EMAIL_PORT=587` - The e-mail server port - common options 25, 465, 487  
 
-
-Telegram notifications (you can use both e-mail and Telegram, read below for detailed instructions):  
+**Telegram Notifications** 
+You can use both e-mail and Telegram, read below for detailed instructions:  
 `-e TELEGRAM_TOKEN=secret` - Telegram token  
 `-e TELEGRAM_CHATID=chatid` - Telegram chatid  
 
@@ -99,28 +98,13 @@ Telegram notifications (you can use both e-mail and Telegram, read below for det
 --
 **Configuring advanced automation in HomeKit**
 
- 1. Open the [Home](https://apps.apple.com/us/app/home/id1110145103) app
- 2. Click on `+` sign
- 3. Select `Add New Automation`
- 4. Select `A Time Of Day Occurs` 
- 5. Set any date (we will change that later)
- 6. Select `People Off` and click `Next`
- 7. Scroll to the bottom of the page and click `Convert To Shortcut`
- 8. Click `Add action` and select `URL`
- 9. Click on the `URL` action and input your Docker container IP followed by `/active-hub-report-health/`
-     Example: `http://10.10.200.200:8080/active-hub-report-health/`
-  10. Click `Add action` and select `Get Contents Of URL`
-  11. Make sure the `Get Contents Of URL` action uses the `URL` variable
-      Result:
-      ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/shortcut-example.png?raw=true)
-12. Click `Next` and set a `Name` for the automation
-
-Next we need to schedule this automation to run every 5 minutes.
+First we need to schedule an automation to run every 5 minutes.
 Unfortunately that is not possible in the Home app, so we are going to use a 3rd party app.
 You can do that with either [Controller for HomeKit](https://apps.apple.com/us/app/controller-for-homekit/id1198176727) (the free version supports that), [Home+](https://apps.apple.com/us/app/home-5/id995994352) (paid), [Eve for HomeKit](https://apps.apple.com/us/app/eve-for-homekit/id917695792) (also free)
 
-1. Open your app of choice and find the automation that we just defined in Home - `Automations` in Controller, `Automation > Timers` in Eve
-2. Click on it and set `Repeat` to `5 minutes`
+1. Open your app of choice and create a new automation - navigate to `Automations > New Automation > In recurring time intervals > Minute` in Controller, `Automation > Timers` in Eve 
+3. Set the automation to execute any scene that you have - which one doesn't matter we will change it later
+4. Set it to `Repeat` every `5 minutes`
 
    **Controller**  
    ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/controller.png?raw=true)
@@ -129,10 +113,22 @@ You can do that with either [Controller for HomeKit](https://apps.apple.com/us/a
    
    ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/eve.png?raw=true)
 
+ 5. Next open the built-in [Home](https://apps.apple.com/us/app/home/id1110145103) app
+ 6. Select the previously created automation 
+ 7. Click `Select Accessories and Scenes...`
+ 8. Scroll down to the end of the list and click `Convert To Shortcut`
+ 9. Click `Add action` and select `URL`
+ 10. Click on the `URL` action and input your Docker container IP followed by `/active-hub-report-health/`  Example: `http://10.10.200.200:8080/active-hub-report-health/`
+
+ 11. Click `Add action` and select `Get Contents Of URL`
+ 12. Make sure the `Get Contents Of URL` action uses the `URL` variable
+      Result:
+      ![enter image description here](https://github.com/clickbg/homekit-monitord/blob/main/.pics/shortcut-example.png?raw=true)
+5. Click `Next` and set a `Name` for the automation
 
 **Zigbee2MQTT Smart Outlet setup**  
 --
-Zigbee2MQTT like IKEA Tradfri can be controlled outside of HomeKit and has open, well documented format.  
+Zigbee2MQTT can be controlled outside of HomeKit and has open, well documented API.  
 
 ***Getting access***  
 If you are using Eclipse Mosquitto check out your mosquitto.conf for user/password/port/encryption.  
@@ -150,7 +146,6 @@ Example:
 **IKEA Tradfri Smart Outlet setup**  
 --
 IKEA Tradfri smart outlet is ideal for us since it can be controlled outside of HomeKit and doesn't require internet.  
-If you want me to add support for other smart outlet please get in touch.  
 
 ***Getting access token***   
 In the container there is a helper script which you can use to register and discover devices on your IKEA Tradfri Hub:  

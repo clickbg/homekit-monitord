@@ -1,8 +1,8 @@
 
 # HomeKit Active Hub Monitoring
 
-[![CICD](https://github.com/clickbg/homekit-monitord/workflows/CICD/badge.svg?branch=main)](https://github.com/clickbg/homekit-monitord/actions/workflows/cicd.yaml)
-[![UPDATE](https://github.com/clickbg/homekit-monitord/workflows/UPDATE/badge.svg?branch=main)](https://github.com/clickbg/homekit-monitord/actions/workflows/update.yaml)
+[![CICD](https://github.com/clickbg/homekit-monitord/workflows/CICD/badge.svg)](https://github.com/clickbg/homekit-monitord/actions/workflows/cicd.yaml)
+[![UPDATE](https://github.com/clickbg/homekit-monitord/workflows/UPDATE/badge.svg)](https://github.com/clickbg/homekit-monitord/actions/workflows/update.yaml)
 [![PUBLISH](https://github.com/clickbg/homekit-monitord/workflows/PUBLISH/badge.svg)](https://github.com/clickbg/homekit-monitord/actions/workflows/publish.yaml)
 
 <img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" width="20" height="20"> [Avaliable on DockerHub](https://hub.docker.com/r/clickbg/homekit-monitord)

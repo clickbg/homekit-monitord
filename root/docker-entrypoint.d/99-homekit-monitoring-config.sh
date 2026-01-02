@@ -38,7 +38,7 @@ if [[ -z $NOTIFY_EMAIL || -z $EMAIL_SENDER || -z $EMAIL_SERVER || -z $EMAIL_PORT
  sed -i '/set alert/d' $MONITRC
  sed -i '/set mail-format/d' $MONITRC
 else
- sed -i "s/EMAIL/$NOTIFY_EMAIL/g" $MONITRC
+ for EMAIL in $NOTIFY_EMAIL; do echo "set alert $EMAIL" >> $MONITRC; done
  sed -i "s/SERVER/$EMAIL_SERVER/g" $MONITRC
  sed -i "s/PORT/$EMAIL_PORT/g" $MONITRC
  sed -i "s/EUSER/$EMAIL_SENDER/g" $MONITRC

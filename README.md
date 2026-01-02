@@ -28,7 +28,7 @@ In case the currently active Hub crashes/hangs or otherwise stops running this a
 --
 Command Line:
 
-    docker run --name homekit-monitord -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.gmail.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p 8080:80 clickbg/homekit-monitord:latest
+    docker run --name homekit-monitord -e IKEA_USER=ikea_hub_user -e IKEA_HUB_ADDR=ikea_hub_ip -e IKEA_TOKEN=ikea_hub_token -e HOMEKIT_HUBS="10.10.10.20:200 10.10.10.30:200 10.10.10.40:200" -e NOTIFY_EMAIL="me@example.com you@example.org" -e EMAIL_SENDER="bot@example.com" -e EMAIL_SERVER="smtp.gmail.com" -e EMAIL_PORT="587" -e EMAIL_PASSWORD="secret" -e RESTART_HUB=1 -e TELEGRAM_TOKEN=secret -e TELEGRAM_CHATID=chatid -d -p 8080:80 clickbg/homekit-monitord:latest
   
  Using [Docker Compose](https://docs.docker.com/compose/) (recommended):
 
@@ -45,7 +45,7 @@ Command Line:
           - PGID=1000
           - TZ=Bulgaria/Sofia
           - RESTART_HUB=0
-          - NOTIFY_EMAIL=me@example.com
+          - NOTIFY_EMAIL=me@example.com you@example.org
           - EMAIL_SENDER=bot@example.com
           - EMAIL_PASSWORD=secret
           - EMAIL_SERVER=smtp.gmail.com
@@ -83,7 +83,7 @@ Command Line:
 
 **E-mail Notifications** 
 The container doesn't ship with e-mail server so please use your own or Gmail:  
-`-e NOTIFY_EMAIL=me@example.com` - The e-mail address of the person who will receive alerts  
+`-e NOTIFY_EMAIL=me@example.com you@example.org` - The e-mail address of the person who will receive alerts  
 `-e EMAIL_SENDER=bot@example.com` - The username of the e-mail from which the alerts will be sent  
 `-e EMAIL_PASSWORD=secret` - The password of the e-mail from which the alerts will be sent  
 `-e EMAIL_SERVER=smtp.gmail.com` - The e-mail server from which the alerts will be sent  
